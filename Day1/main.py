@@ -18,6 +18,12 @@ def parse(rotation: str):
   count = int(rotation[1:].strip())
   return Rotation(direction, count)
 
+def calc_next_position(dial: int, rot: Rotation):
+    if rot.direction == 'L':
+        return (dial - rot.count) % 100
+    else:
+        return (dial + rot.count) % 100
+
 
 with open("input.txt", "r") as f:
   rotations = f.readlines()
@@ -28,15 +34,7 @@ def method1():
   dial = 50
   for r_string in rotations:
     rotation = parse(r_string)
-    if rotation.direction == 'L':
-      dial += 100
-      dial -= rotation.count
-    elif rotation.direction == 'R':
-      dial += rotation.count
-    else:
-      raise Exception("Unknown action: " + rotation.direction)
-
-    dial = dial % 100
+    dial = calc_next_position(dial, rotation)
     if dial == 0:
       zero_count += 1
   return zero_count
@@ -44,22 +42,23 @@ def method1():
 def method_CLICK():
   zero_count = 0
   dial = 50
+
   for r_string in rotations:
     rotation = parse(r_string)
-    if rotation.direction == 'L':
-      dial -= rotation.count
-    elif rotation.direction == 'R':
-      dial += rotation.count
-    else:
-      raise Exception("Unknown action: " + rotation.direction)
 
-    while dial < 0 or dial > 99:
-      if dial < 0:
-        dial += 100
-        zero_count += 1
-      if dial > 99:
-        dial -= 100
-        zero_count += 1
+    if rotation.direction == 'L':
+      for tic in range(rotation.count):
+        dial -= 1
+        dial = dial % 100
+        if dial == 0:
+          zero_count += 1
+    else:
+      for tic in range(rotation.count):
+        dial += 1
+        dial = dial % 100
+        if dial == 0:
+          zero_count += 1
+
   return zero_count
 
 if __name__ == "__main__":
