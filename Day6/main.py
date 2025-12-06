@@ -1,5 +1,4 @@
 import math
-from itertools import zip_longest
 
 
 def parse_input(filename: str) -> list[str]:
